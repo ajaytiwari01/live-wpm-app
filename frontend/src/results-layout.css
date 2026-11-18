@@ -1,0 +1,117 @@
+html body #root .app-shell .dashboard {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+html body #root .app-shell .dashboard::-webkit-scrollbar {
+  display: none;
+}
+
+html body #root .app-shell .dashboard > .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: 8px;
+  isolation: isolate;
+  background: #0c1524;
+}
+
+html body #root .app-shell .dashboard > .topbar::before {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  inset: 0 -100vw;
+  background: #0c1524;
+  border-bottom: 1px solid #1d2a3e;
+}
+
+html body #root .app-shell .dashboard-results {
+  padding-top: 0;
+}
+
+html body #root .app-shell .dashboard > .results-layout {
+  height: calc(100dvh - 100px);
+  min-height: 0;
+  max-height: none;
+  flex: none;
+  overflow: visible;
+  scroll-margin-top: 78px;
+}
+
+html body #root .app-shell .dashboard .results-column {
+  min-height: 0;
+}
+
+html body #root .app-shell .dashboard .results-column .chart-panel {
+  min-height: 0;
+}
+
+html body #root .app-shell .dashboard .results-layout .transcript-panel {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html body #root .app-shell .dashboard .results-layout .transcript-content {
+  min-height: 0;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #40516d #111c2d;
+}
+
+html body #root .app-shell .dashboard .results-layout .transcript-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+html body #root .app-shell .dashboard .results-layout .transcript-content::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #40516d;
+}
+
+html body #root .app-shell .dashboard .results-layout .transcript-content::-webkit-scrollbar-track {
+  background: #111c2d;
+  border-radius: 8px;
+}
+
+html body #root .app-shell .dashboard .results-metrics .metric-card {
+  padding: 12px 14px;
+}
+
+html body #root .app-shell .dashboard .results-metrics .metric-value {
+  margin: 7px 0 4px;
+  font-size: 28px;
+}
+
+html body #root .app-shell .dashboard .results-metrics .metric-hint {
+  font-size: 9px;
+}
+
+@media (max-width: 600px) {
+  html body #root .app-shell .dashboard > .results-layout {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html body #root .app-shell .dashboard .results-column .chart-panel {
+    min-height: 260px;
+  }
+
+  html body #root .app-shell .dashboard .results-layout .transcript-panel {
+    height: min(420px, 55dvh);
+  }
+
+  html body #root .app-shell .dashboard .results-metrics .metric-card {
+    padding: 6px;
+  }
+
+  html body #root .app-shell .dashboard .results-metrics .metric-value {
+    font-size: 17px;
+  }
+}

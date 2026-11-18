@@ -26,6 +26,7 @@ export function useLiveAudio() {
   }, [])
 
   const reset = useCallback(() => {
+    setStatus('idle')
     setMetrics(INITIAL_METRICS)
     setTranscriptItems({})
     setChartData([])
@@ -35,7 +36,28 @@ export function useLiveAudio() {
   const stop = useCallback(async () => {
     const r = resources.current
     if (r.socket?.readyState === WebSocket.OPEN) {
-      try { r.socket.send('STOP') } catch {}
+      r.stopping = true
+      await new Promise(resolve => {
+        const socket = r.socket
+        const finish = () => {
+          window.clearTimeout(timeout)
+          socket.removeEventListener('message', handleMessage)
+          resolve()
+        }
+        const handleMessage = event => {
+          try {
+            const message = JSON.parse(event.data)
+            if (message.type === 'status' && message.status === 'stopped') finish()
+          } catch {}
+        }
+        const timeout = window.setTimeout(finish, 1500)
+        socket.addEventListener('message', handleMessage)
+        try {
+          socket.send('STOP')
+        } catch {
+          finish()
+        }
+      })
     }
     await cleanup()
     setStatus('stopped')
@@ -90,7 +112,7 @@ export function useLiveAudio() {
         if (message.type === 'metrics' && message.metrics) {
           setMetrics(message.metrics)
           setChartData(old => {
-            const point = { time: new Date().toLocaleTimeString(), wpm: message.metrics.live_wpm }
+            const point = { time: new Date().toLocaleTimeString(), average_wpm: message.metrics.average_wpm }
             if (old.length && old[old.length - 1].time === point.time) return [...old.slice(0, -1), point]
             return [...old, point].slice(-60)
           })
@@ -109,9 +131,10 @@ export function useLiveAudio() {
           })
           if (message.metrics) {
             setMetrics(message.metrics)
-            setChartData(old => [...old, { time: new Date().toLocaleTimeString(), wpm: message.metrics.live_wpm }].slice(-60))
+            setChartData(old => [...old, { time: new Date().toLocaleTimeString(), average_wpm: message.metrics.average_wpm }].slice(-60))
           }
         }
+        if (message.type === 'status' && message.status === 'stopped') setStatus('stopped')
         if (message.type === 'error') setError(message.message || 'Transcription error.')
       }, (message) => setError(message))
       resources.current.socket = socket
